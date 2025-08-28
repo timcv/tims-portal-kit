@@ -238,6 +238,7 @@ export type Database = {
           priority: number | null
           status: Database["public"]["Enums"]["ticket_status"]
           title: string
+          type: string | null
           updated_at: string
         }
         Insert: {
@@ -251,6 +252,7 @@ export type Database = {
           priority?: number | null
           status?: Database["public"]["Enums"]["ticket_status"]
           title: string
+          type?: string | null
           updated_at?: string
         }
         Update: {
@@ -264,6 +266,7 @@ export type Database = {
           priority?: number | null
           status?: Database["public"]["Enums"]["ticket_status"]
           title?: string
+          type?: string | null
           updated_at?: string
         }
         Relationships: [

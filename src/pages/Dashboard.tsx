@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +21,7 @@ import {
 const Dashboard = () => {
   const { user, signOut, isSuperAdmin, hasRole } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -171,12 +173,7 @@ const Dashboard = () => {
               <Button 
                 variant="accent" 
                 className="w-full"
-                onClick={() => {
-                  toast({
-                    title: 'Ärendeformulär öppnas',
-                    description: 'Denna funktion kommer snart att vara tillgänglig.',
-                  });
-                }}
+                onClick={() => navigate('/create-ticket')}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Skapa nytt ärende
