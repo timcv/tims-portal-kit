@@ -168,7 +168,16 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="accent" className="w-full">
+              <Button 
+                variant="accent" 
+                className="w-full"
+                onClick={() => {
+                  toast({
+                    title: 'Ärendeformulär öppnas',
+                    description: 'Denna funktion kommer snart att vara tillgänglig.',
+                  });
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Skapa nytt ärende
               </Button>
