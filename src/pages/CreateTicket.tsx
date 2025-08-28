@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,8 +24,21 @@ type TicketFormValues = z.infer<typeof ticketFormSchema>;
 
 export default function CreateTicket() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const { toast } = useToast();
+  
+  useEffect(() => {
+    document.title = 'Skapa ärende – Kundportal';
+    const desc = document.querySelector('meta[name="description"]');
+    const content = 'Skapa nytt ärende med ämne, typ och beskrivning.';
+    if (desc) desc.setAttribute('content', content);
+    else {
+      const m = document.createElement('meta');
+      (m as HTMLMetaElement).name = 'description';
+      m.setAttribute('content', content);
+      document.head.appendChild(m);
+    }
+  }, []);
   
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketFormSchema),
@@ -37,7 +50,7 @@ export default function CreateTicket() {
   });
 
   const onSubmit = async (values: TicketFormValues) => {
-    if (!user?.profile?.account_id) {
+    if (!session?.user?.id) {
       toast({
         title: 'Fel',
         description: 'Du måste vara inloggad för att skapa ett ärende.',
@@ -47,14 +60,28 @@ export default function CreateTicket() {
     }
 
     try {
+      const { data: account_id, error: accountErr } = await supabase.rpc('get_user_account', {
+        _user_id: session.user.id,
+      });
+      if (accountErr) throw accountErr;
+
+      if (!account_id) {
+        toast({
+          title: 'Ingen konto-koppling',
+          description: 'Din profil saknar kopplat konto. Kontakta administratör.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       const { error } = await supabase
         .from('tickets')
         .insert({
           title: values.subject,
           type: values.type,
           description: values.description,
-          account_id: user.profile.account_id,
-          created_by: user.profile.user_id,
+          account_id,
+          created_by: session.user.id,
           status: 'open',
           priority: 3,
         });
